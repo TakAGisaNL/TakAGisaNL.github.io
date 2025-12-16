@@ -818,6 +818,10 @@ line
   background-color: #fff;
 }
 
+.memory-section .title-box {
+  margin-bottom: 42px;
+}
+
 .memory-section .title-box .memory-section-title {
   color: #fff;
 }

@@ -794,7 +794,7 @@ line
 /* memory */
 .memory-section {
   position: relative;
-  height: 700px;
+  height: 600px;
 }
 /* background mask */
 .memory-section::after {

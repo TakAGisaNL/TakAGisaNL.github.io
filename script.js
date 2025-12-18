@@ -260,8 +260,8 @@ const donationCarousel = {
 };
 
 class MemoryCarousel {
-  static CAROUSEL_HEIGHT = 430;
-  static AUTO_PLAY_INTERVAL = 3000;
+  static CAROUSEL_HEIGHT = 427;
+  static AUTO_PLAY_INTERVAL = 1000;
 
   constructor() {
     this.currentTabId = "tab1";

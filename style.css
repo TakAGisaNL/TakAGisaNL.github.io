@@ -184,7 +184,7 @@ body::before {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 66px;
+  margin-bottom: 24px;
   position: relative;
 }
 
@@ -196,7 +196,7 @@ body::before {
 .title-box::after {
   content: "";
   position: absolute;
-  bottom: 0;
+  bottom: -5px;
   width: 1200px;
   height: 2px;
   background-color: #6a131b;
@@ -316,7 +316,7 @@ body::before {
 .blessing-section {
   position: relative;
   margin-bottom: 48px;
-  padding: 0 60px;
+  /* padding: 0 60px; */
   box-sizing: border-box;
 }
 
@@ -335,14 +335,14 @@ body::before {
 }
 
 .blessing-item {
-  width: 338px;
-  height: 244px;
+  width: 646px;
+  height: 495px;
   transition: transform 0.5s ease;
 }
 
 .blessing-item video {
-  width: 338px;
-  height: 244px;
+  width: 646px;
+  height: 495px;
   /* object-fit: cover; */
   display: block;
   transition: all 0.5s ease;
@@ -382,12 +382,12 @@ body::before {
 }
 
 .blessing-section .blessing-controls .prev-btn {
-  left: 20px;
+  left: -80px;
   transform: rotate(180deg);
 }
 
 .blessing-section .blessing-controls .next-btn {
-  right: 20px;
+  right: -80px;
 }
 
 /* 
@@ -398,7 +398,7 @@ body::before {
  */
 /* 捐赠信息 */
 .donation-section {
-  padding: 20px 0;
+  padding: 30px 0 20px 0;
   position: relative;
   margin-bottom: 8px;
 }
@@ -410,9 +410,9 @@ body::before {
   position: absolute;
   top: 10px;
   left: -360px;
-  background-color: hsla(354, 70%, 25%, 1);
-  filter: blur(10px);
-  z-index: -10;
+  background: #6a131b url("img/donation_background.png ");
+  background-position: center;
+  z-index: -1;
 }
 
 .donation-section .donation-title-box .donation-section-title {
@@ -426,7 +426,7 @@ body::before {
 .donation-title-box::after {
   content: "";
   position: absolute;
-  bottom: 0;
+  bottom: -5px;
   width: 1200px;
   height: 2px;
   background-color: #fff;
@@ -489,13 +489,13 @@ body::before {
 
 /* 列宽分配 */
 .table-col:nth-child(1) {
-  flex: 0.8;
+  flex: 1;
 }
 .table-col:nth-child(2) {
-  flex: 0.7;
+  flex: 1;
 }
 .table-col:nth-child(3) {
-  flex: 1.5;
+  flex: 1;
   border-right: none;
 }
 
@@ -566,7 +566,7 @@ body::before {
   display: flex;
   gap: 58px;
   width: auto;
-  left: -320px;
+  left: -330px;
   top: 480px;
 }
 .history-section .history-timeline-box.third-row {
@@ -574,7 +574,7 @@ body::before {
   display: flex;
   gap: 58px;
   width: auto;
-  left: 150px;
+  left: -8px;
   top: 735px;
 }
 
@@ -603,15 +603,15 @@ body::before {
 /* clockwise-arrow */
 .history-section .history-timeline li .content-box.clockwise-arrow1 {
   top: -2px;
-  left: 0;
+  left: -15px;
 }
 .history-section .history-timeline li .content-box.clockwise-arrow2 {
   top: 60px;
-  left: 5px;
+  left: -5px;
 }
 .history-section .history-timeline li .content-box.clockwise-arrow3 {
   top: 170px;
-  left: -88px;
+  left: -100px;
 }
 /* second row */
 .history-section .history-timeline li .content-box.second-row {
@@ -799,19 +799,18 @@ line
 .memory-section::after {
   content: "";
   width: 1920px;
-  height: 629px;
+  height: 632px;
   position: absolute;
-  top: 0;
+  top: -12px;
   left: -360px;
-  background-color: hsla(354, 70%, 25%, 1);
-  filter: blur(10px);
-  z-index: -10;
+  background: url("img/memory_background.png");
+  z-index: -1;
 }
 
 .memory-title-box::after {
   content: "";
   position: absolute;
-  bottom: 0;
+  bottom: -5px;
   width: 1200px;
   height: 2px;
   background-color: #fff;
@@ -892,7 +891,11 @@ line
   display: grid;
   grid-template-columns: 267px 306px 306px 267px;
   grid-template-rows: 205px 205px;
-  gap: 20px;
+  gap: 18px;
+}
+
+.tab-content ul li {
+  border: 6px solid #fff;
 }
 
 .tab-content ul li:nth-child(1) {

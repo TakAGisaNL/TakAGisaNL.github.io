@@ -20,7 +20,7 @@ body {
   z-index: 0;
 }
 
-body::before {
+/* body::before {
   content: "";
   position: fixed;
   top: 0;
@@ -34,7 +34,7 @@ body::before {
   background-repeat: no-repeat;
   opacity: 0.2;
   z-index: -1;
-}
+} */
 .wrapper {
   width: 1200px;
   margin: 0 auto;
@@ -545,9 +545,22 @@ body::before {
  */
 /* 院史长廊 */
 .history-section {
-  /* margin-bottom: 500px; */
   position: relative;
   height: 960px;
+}
+
+.history-section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("img/history_background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
 }
 
 .title-box.history-title-box {

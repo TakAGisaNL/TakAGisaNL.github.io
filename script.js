@@ -104,7 +104,7 @@ const blessingCarousel = {
   prevBtn: document.querySelector(".blessing-controls .prev-btn"),
   nextBtn: document.querySelector(".blessing-controls .next-btn"),
   currentIndex: 0,
-  visibleCount: 3,
+  visibleCount: 2,
   interval: null,
 
   init() {
@@ -148,7 +148,7 @@ const blessingCarousel = {
     const maxIndex = this.items.length - this.visibleCount;
     this.items.forEach((item) => item.classList.remove("center"));
     this.currentIndex =
-      this.currentIndex <= 0 ? maxIndex : this.currentIndex - 1;
+      this.currentIndex < 0 ? maxIndex : this.currentIndex - 1;
     const activeIndex = this.currentIndex + 1;
     this.items[activeIndex].classList.add("center");
     this.updatePosition();
@@ -367,18 +367,32 @@ document.addEventListener("DOMContentLoaded", function () {
   const firstRow = document.querySelector(".history-timeline-box.first-row");
   const secondRow = document.querySelector(".history-timeline-box.second-row");
   const thirdRow = document.querySelector(".history-timeline-box.third-row");
-
   const firstCurveArrows = document.querySelectorAll(
     ".counterclockwise_arrow1, .clockwise-arrow1"
   );
   const secondCurveArrows = document.querySelectorAll(
     ".counterclockwise_arrow2, .clockwise-arrow2"
   );
-
+  const thirdCurveArrows = document.querySelectorAll(
+    ".clockwise-arrow3, .counterclockwise_arrow3"
+  );
   const firstRowTrigger = firstRow?.querySelector(".first-arrow");
   const secondRowTrigger = secondRow?.querySelector(".first-arrow");
   const thirdRowTrigger = thirdRow?.querySelector(".first-arrow");
 
+  let loopTimer = null; // 循环计时器
+  let isFirstTriggered = false; // 初次滚动触发标记
+  let scrollHandler = null;
+  const CONFIG = {
+    rowDelay: 800, // 滚动触发时的默认逐行间隔
+    arrowDelay: 300, // 行显示后箭头延迟
+    stayDuration: 10000, // 完全显示后停留10秒
+    hideDuration: 1000, // 消失过渡时长
+    intervalBetweenLoop: 2000, // 消失后→下一轮显示前
+    rowIntervalLoop: 3000, // 仅循环阶段的小段动画间隔
+  };
+
+  // 判断元素是否在视口内
   function isElementInViewport(el) {
     if (!el) return false;
     const rect = el.getBoundingClientRect();
@@ -387,79 +401,134 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 
-  function checkScrollTrigger() {
-    if (firstRow && firstRowTrigger && isElementInViewport(firstRowTrigger)) {
-      firstRow.classList.add("visible");
-      const triggerRect = firstRowTrigger.getBoundingClientRect();
-      if (triggerRect.bottom <= window.innerHeight - 80) {
-        firstCurveArrows.forEach((arrow) =>
-          arrow.classList.add("arrow-visible")
-        );
-      }
-    }
+  function showStage(isLoop = false) {
+    return new Promise((resolve) => {
+      const rowInterval = isLoop ? CONFIG.rowIntervalLoop : CONFIG.rowDelay;
 
-    if (
-      secondRow &&
-      secondRowTrigger &&
-      isElementInViewport(secondRowTrigger)
-    ) {
-      secondRow.classList.add("visible");
-      const triggerRect = secondRowTrigger.getBoundingClientRect();
-      if (triggerRect.bottom <= window.innerHeight - 80) {
-        secondCurveArrows.forEach((arrow) =>
-          arrow.classList.add("arrow-visible")
+      // 显示第一行 + 箭头
+      setTimeout(() => {
+        firstRow?.classList.add("visible");
+        setTimeout(
+          () =>
+            firstCurveArrows.forEach((arrow) =>
+              arrow.classList.add("arrow-visible")
+            ),
+          CONFIG.arrowDelay
         );
-      }
-    }
 
-    if (thirdRow && thirdRowTrigger && isElementInViewport(thirdRowTrigger)) {
-      thirdRow.classList.add("visible");
+        // 延迟（滚动=800ms/循环=3秒）后显示第二行 + 箭头
+        setTimeout(() => {
+          secondRow?.classList.add("visible");
+          setTimeout(
+            () =>
+              secondCurveArrows.forEach((arrow) =>
+                arrow.classList.add("arrow-visible")
+              ),
+            CONFIG.arrowDelay
+          );
+
+          // 延迟（滚动=800ms/循环=3秒）后显示第三行 + 箭头
+          setTimeout(() => {
+            thirdRow?.classList.add("visible");
+            setTimeout(() => {
+              thirdCurveArrows.forEach((arrow) =>
+                arrow.classList.add("arrow-visible")
+              );
+              resolve(); // 全部显示完成
+            }, CONFIG.arrowDelay);
+          }, rowInterval);
+        }, rowInterval);
+      }, 0);
+    });
+  }
+
+  // 全部消失
+  function hideAll() {
+    return new Promise((resolve) => {
+      [firstRow, secondRow, thirdRow].forEach((row) =>
+        row?.classList.remove("visible")
+      );
+      [firstCurveArrows, secondCurveArrows, thirdCurveArrows].forEach(
+        (arrows) => {
+          arrows.forEach((arrow) => arrow.classList.remove("arrow-visible"));
+        }
+      );
+      setTimeout(resolve, CONFIG.hideDuration);
+    });
+  }
+
+  async function loopAnimation() {
+    await showStage(true);
+    await new Promise((resolve) => setTimeout(resolve, CONFIG.stayDuration)); // 停留10秒
+    await hideAll(); // 全部消失
+    await new Promise((resolve) =>
+      setTimeout(resolve, CONFIG.intervalBetweenLoop)
+    );
+    loopTimer = setTimeout(loopAnimation, 0); // 重复循环
+  }
+
+  // 启动循环
+  function startLoop() {
+    if (!loopTimer) loopAnimation();
+  }
+
+  // 停止循环
+  function stopLoop() {
+    if (loopTimer) {
+      clearTimeout(loopTimer);
+      loopTimer = null;
     }
   }
 
-  const thirdCurveArrows = document.querySelectorAll(
-    ".clockwise-arrow3, .counterclockwise_arrow3"
-  );
+  // 重置为消失状态
+  function resetToHidden() {
+    [firstRow, secondRow, thirdRow].forEach((row) =>
+      row?.classList.remove("visible")
+    );
+    [firstCurveArrows, secondCurveArrows, thirdCurveArrows].forEach(
+      (arrows) => {
+        arrows.forEach((arrow) => arrow.classList.remove("arrow-visible"));
+      }
+    );
+  }
 
+  // 滚动触发逻辑
   function checkScrollTrigger() {
-    if (firstRow && firstRowTrigger && isElementInViewport(firstRowTrigger)) {
-      firstRow.classList.add("visible");
-      const triggerRect = firstRowTrigger.getBoundingClientRect();
-      if (triggerRect.bottom <= window.innerHeight - 80) {
-        firstCurveArrows.forEach((arrow) =>
-          arrow.classList.add("arrow-visible")
-        );
-      }
-    }
+    const isInView =
+      isElementInViewport(firstRowTrigger) ||
+      isElementInViewport(secondRowTrigger) ||
+      isElementInViewport(thirdRowTrigger);
 
-    if (
-      secondRow &&
-      secondRowTrigger &&
-      isElementInViewport(secondRowTrigger)
-    ) {
-      secondRow.classList.add("visible");
-      const triggerRect = secondRowTrigger.getBoundingClientRect();
-      if (triggerRect.bottom <= window.innerHeight - 80) {
-        secondCurveArrows.forEach((arrow) =>
-          arrow.classList.add("arrow-visible")
-        );
-      }
-    }
+    if (isInView && !isFirstTriggered) {
+      isFirstTriggered = true;
+      showStage(false).then(() => startLoop()); // false=滚动阶段，用默认间隔
 
-    if (thirdRow && thirdRowTrigger && isElementInViewport(thirdRowTrigger)) {
-      thirdRow.classList.add("visible");
-      const triggerRect = thirdRowTrigger.getBoundingClientRect();
-      if (triggerRect.bottom <= window.innerHeight - 80) {
-        thirdCurveArrows.forEach((arrow) =>
-          arrow.classList.add("arrow-visible")
-        );
-      }
+      window.removeEventListener("scroll", scrollHandler);
+    } else if (isInView && isFirstTriggered) {
+      startLoop();
+    } else if (!isInView) {
+      stopLoop();
+      resetToHidden();
     }
   }
 
-  // 确保滚动事件监听已正确绑定（如果之前未绑定需要添加）
-  window.addEventListener("scroll", throttle(checkScrollTrigger));
-  // 4. 节流优化（避免滚动时频繁执行，提升性能）
+  scrollHandler = throttle(checkScrollTrigger);
+  // 绑定滚动事件
+  window.addEventListener("scroll", scrollHandler);
+
+  // 初始化
+  setTimeout(() => {
+    const isInViewInit =
+      isElementInViewport(firstRowTrigger) ||
+      isElementInViewport(secondRowTrigger) ||
+      isElementInViewport(thirdRowTrigger);
+    if (isInViewInit) {
+      isFirstTriggered = true;
+      startLoop();
+      window.removeEventListener("scroll", scrollHandler); // 解绑滚动事件
+    }
+  }, 300);
+
   function throttle(func, delay = 16) {
     let timer = null;
     return function () {
@@ -471,8 +540,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     };
   }
-
-  window.addEventListener("scroll", throttle(checkScrollTrigger));
 });
 // 页面加载完成后实例化类
 document.addEventListener("DOMContentLoaded", () => {

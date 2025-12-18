@@ -574,7 +574,7 @@ body::before {
   display: flex;
   gap: 58px;
   width: auto;
-  left: -8px;
+  left: -15px;
   top: 735px;
 }
 
@@ -607,11 +607,11 @@ body::before {
 }
 .history-section .history-timeline li .content-box.clockwise-arrow2 {
   top: 60px;
-  left: -5px;
+  left: -128px;
 }
 .history-section .history-timeline li .content-box.clockwise-arrow3 {
   top: 170px;
-  left: -100px;
+  left: -348px;
 }
 /* second row */
 .history-section .history-timeline li .content-box.second-row {
@@ -739,6 +739,8 @@ line
 
 /* 显示状态 */
 .history-timeline-box.visible {
+  position: absolute;
+  left: -15px;
   opacity: 1;
   transform: translateY(0);
   visibility: visible;
@@ -839,7 +841,7 @@ line
   top: 100%;
   left: 0;
   content: "";
-  width: 80%;
+  width: 50%;
   height: 2px;
   background-color: #968b94;
 }
